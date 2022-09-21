@@ -1,0 +1,3 @@
+@if ($crud->hasAccess('update'))
+<a href="{{ url($crud->route.'/'.$entry->getKey().'/create') }} " class="btn btn-xs btn-default"><i class="fa fa-ban"></i> Lupon Cases</a>
+@endif

@@ -1,0 +1,52 @@
+version: '3.5'
+
+services:
+
+    laravel: &laravel-template
+      image: ${COMPOSE_PROJECT_NAME}_laravel:latest
+      build:
+        context: .
+        args:
+          BUILD_ARGUMENT_ENV: dev
+          HOST_UID: ${HOST_UID}
+          HOST_GID: ${HOST_GID}
+        dockerfile: ./Dockerfile
+      container_name: ${COMPOSE_PROJECT_NAME}_laravel
+      expose:
+        - 80
+        - 443
+      ports:
+        - "8008:80"
+        - "8443:443"
+      volumes:
+        - .:/var/www/html:cached
+      depends_on:
+        - mysql
+      networks:
+        - cityheights
+
+    ### Cron tasks
+    supervisord:
+      <<: *laravel-template
+      container_name: ${COMPOSE_PROJECT_NAME}_supervisord
+      expose: []
+      ports: []
+      command: ["/usr/bin/supervisord"]
+
+    mysql:
+      image: mysql:8.0
+      container_name: ${COMPOSE_PROJECT_NAME}_mysql
+      command: --default-authentication-plugin=mysql_native_password
+      environment:
+        MYSQL_ROOT_PASSWORD: secret
+        MYSQL_DATABASE: laravel
+      ports:
+        - "33061:3306"
+      volumes:
+        - ./storage/mysql-data:/var/lib/mysql:delegated
+      networks:
+        - cityheights
+
+networks:
+  cityheights:
+    name: cityheights

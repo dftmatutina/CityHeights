@@ -1,0 +1,12 @@
+Need to manually create the containers again based on the image and input the items below
+
+
+environment variables:
+        MYSQL_ROOT_PASSWORD: secret
+        MYSQL_DATABASE: laravel
+
+ports:
+        - "33061:3306"
+volumes:
+        - ./storage/mysql-data:/var/lib/mysql:delegated
+        - ./docker/dev/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
